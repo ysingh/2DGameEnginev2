@@ -1,5 +1,6 @@
 #include "Game.h"
 #include <iostream>
+#include <SDL_image.h>
 
 Game::Game() {
     isRunning = false;
@@ -63,7 +64,7 @@ void Game::Initialize() {
         return;
     }
     // Set the renderer's draw color
-    // SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
+    SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 
     isRunning = true;
 }
@@ -123,15 +124,19 @@ void Game::Update() {
 
 
 void Game::Render() {
-    SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
+    // This is now being set once in the init function since it shouldn't change frame by frame
+    // SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
+    
     // It's recommended to clear the rederer before redrawing the current frame
     SDL_RenderClear(renderer);
    
-
-    // Draw a rectangle
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_Rect player = { 10, 10, 20, 20 };
-    SDL_RenderFillRect(renderer, &player);
+    SDL_Surface* surface = IMG_Load("./assets/images/tank-tiger-right.png");
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    // Can free the surface if not needed again
+    //SDL_FreeSurface(surface);
+    SDL_Rect destRect = { 10, 10, 32, 32 };
+    SDL_RenderCopy(renderer, texture, NULL, &destRect);
+    SDL_DestroyTexture(texture);
 
     SDL_RenderPresent(renderer);
 }
