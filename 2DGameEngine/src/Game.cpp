@@ -61,7 +61,7 @@ void Game::Initialize() {
     // and scale our window to be the size of the screen (as big as possible while preserving aspect ratio)
     // Is this the same as setting SDL_CreateWindow flag to SDL_WINDOW_FULLSCREEN
     
-    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    //SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
     // https://wiki.libsdl.org/SDL2/SDL_CreateRenderer
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -129,8 +129,8 @@ void Game::ProcessInput() {
 void Game::Update() {
     // If we are too fast waste some time - this caps the framerate
     // Commenting this out results in us running at uncapped FPS
-    //int timeToWait = MILLISECONDS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame);
-    //if (timeToWait > 0 && timeToWait <= MILLISECONDS_PER_FRAME) {
+    int timeToWait = MILLISECONDS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame);
+    if (timeToWait > 0 && timeToWait <= MILLISECONDS_PER_FRAME) {
         /*
         The function SDL_Delay is not incredibly accurate, since the call of SDL_Delay itself takes some time to execute.
         For example, SDL_Delay will never work at a finer resolution than what the OS's scheduler offers.
@@ -138,8 +138,8 @@ void Game::Update() {
         Modern Linux distros have a 1ms resolution, but the underlying idea still holds.
         And load is also a factor, meaning that if a system is heavily loaded, we might sleep for hundreds of milliseconds.
         */
-     //   SDL_Delay(timeToWait);
-    //}
+        SDL_Delay(timeToWait);
+    }
     
     // Number of seconds elapsed since the last frame
     double deltaTime = (SDL_GetTicks() - millisecsPreviousFrame) / 1000.f;
