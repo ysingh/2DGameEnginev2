@@ -1,6 +1,13 @@
 #include "Game.h"
 #include <iostream>
+#include <glm/glm.hpp>
 #include <SDL_image.h>
+
+#define WINDOW_WIDTH 800
+#define WINDOW_HEIGHT 600
+
+glm::vec2 playerPos;
+glm::vec2 playerVelocity;
 
 Game::Game() {
     isRunning = false;
@@ -31,8 +38,8 @@ void Game::Initialize() {
     // because we will be trying to fill all those pixels with game data
     // 
     // If we keep window size fixed and let sdl scale it then all resolutions will see the same size
-    windowWidth = 800; //displayMode.w;
-    windowHeight = 600; //displayMode.h;
+    windowWidth = WINDOW_WIDTH; //displayMode.w;
+    windowHeight = WINDOW_HEIGHT; //displayMode.h;
 
     // passing NULL for the first param creates a window without titlebar etc.
     // https://wiki.libsdl.org/SDL2/SDL_CreateWindow
@@ -55,7 +62,7 @@ void Game::Initialize() {
     // and scale our window to be the size of the screen (as big as possible while preserving aspect ratio)
     // Is this the same as setting SDL_CreateWindow flag to SDL_WINDOW_FULLSCREEN
     
-    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    //SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
     // https://wiki.libsdl.org/SDL2/SDL_CreateRenderer
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -77,7 +84,8 @@ void Game::Destroy() {
 }
 
 void Game::Setup() {
-
+    playerPos = glm::vec2(10.0, 20.0);
+    playerVelocity = glm::vec2(10.0, 0.0);
 }
 
 void Game::Run() {
@@ -121,7 +129,8 @@ void Game::ProcessInput() {
 }
 
 void Game::Update() {
-
+    playerPos.x = static_cast<int>(playerPos.x + playerVelocity.x)% WINDOW_WIDTH;
+    playerPos.y += playerVelocity.y;
 }
 
 
@@ -135,10 +144,14 @@ void Game::Render() {
     SDL_Surface* surface = IMG_Load("./assets/spritesheets/fire_knight_SpriteSheet_288x128.png");
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
     // Can free the surface if not needed again
-    //SDL_FreeSurface(surface);
+    SDL_FreeSurface(surface);
     
-    SDL_Rect destRect = { 0, 0, 720, 320 };
-    SDL_Rect srcRect = { 288 * frame, 128 * 5 , 288, 128 };
+    SDL_Rect destRect = { 
+        static_cast<int>(playerPos.x),
+        static_cast<int>(playerPos.y),
+        288,
+        128 };
+    SDL_Rect srcRect = { 288 * frame, 128, 288, 128 };
     SDL_RenderCopy(renderer, texture, &srcRect, &destRect);
     
     
