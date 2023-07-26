@@ -1,0 +1,6 @@
+[
+    { "directory": "./2DGameEngine/src",
+      "arguments": ["C:/Library/Developer/Toolchains/unknown-Asserts-development.xctoolchain/usr/bin/clang++.exe", "-Wl", "-rpath", "C:/Users/ysing/DEV/SDL2/include", "-Irelative", "-DSOMEDEF=With spaces, quotes and \\-es.", "-c", "-o", "file.o", "file.cc"],
+      "file": "file.cc" 
+    }
+  ]
