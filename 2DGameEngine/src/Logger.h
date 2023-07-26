@@ -1,3 +1,9 @@
+/*
+   * Examples of a professional logger
+   * C++: https://github.com/gabime/spdlog\
+   * C: https://github.com/rxi/log.c
+*/
+
 #ifndef LOGGER_H
 #define LOGGER_H
 
