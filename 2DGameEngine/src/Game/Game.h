@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include <glm/glm.hpp>
 #include <SDL_image.h>
-#include "Logger.h"
+#include "../Logger/Logger.h"
 
 const int FPS = 60;
 const int MILLISECONDS_PER_FRAME = 1000 / FPS;
