@@ -162,22 +162,7 @@ void Game::Render() {
 
 	// It's recommended to clear the rederer before redrawing the current frame
 	SDL_RenderClear(renderer);
-
-	SDL_Surface* surface = IMG_Load("./assets/images/tank-tiger-right.png");
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-	// Can free the surface if not needed again
-	SDL_FreeSurface(surface);
-
-	SDL_Rect destRect = {
-		10,
-		20,
-		32,
-		32 };
-	//SDL_Rect srcRect = { 288 * frame, 128, 288, 128 };
-	SDL_RenderCopy(renderer, texture, NULL, &destRect);
-
-
-	SDL_DestroyTexture(texture);
-
+	
+	// TODO: Render game objects.. 
 	SDL_RenderPresent(renderer);
 }
