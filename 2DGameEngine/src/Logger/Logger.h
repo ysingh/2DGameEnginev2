@@ -7,10 +7,8 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <iostream>
 #include <string>
 #include <chrono>
-#include <ctime>
 #include <vector>
 
 enum LogType {
