@@ -152,13 +152,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ECS\ECS.cpp" />
     <ClCompile Include="src\Game\Game.cpp" />
     <ClCompile Include="src\Logger\Logger.cpp" />
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Components\TransformComponent.h" />
+    <ClInclude Include="src\ECS\ECS.h" />
     <ClInclude Include="src\Game\Game.h" />
     <ClInclude Include="src\Logger\Logger.h" />
+    <ClInclude Include="src\Systems\MovementSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

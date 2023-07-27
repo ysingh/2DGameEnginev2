@@ -1,10 +1,11 @@
+#include <glm/glm.hpp>
+#include <SDL_image.h>
+#include "../Logger/Logger.h"
 #include "Game.h"
+#include "../ECS/ECS.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
-
-glm::vec2 playerPos;
-glm::vec2 playerVelocity;
 
 Game::Game() {
 	isRunning = false;
@@ -79,8 +80,6 @@ void Game::Destroy() {
 }
 
 void Game::Setup() {
-	playerPos = glm::vec2(10.0, 20.0);
-	playerVelocity = glm::vec2(200, 100);
 }
 
 void Game::Run() {
@@ -144,9 +143,6 @@ void Game::Update() {
 
 	// Store the current frame time
 	millisecsPreviousFrame = SDL_GetTicks();
-
-	playerPos.x += playerVelocity.x * deltaTime;
-	playerPos.y += playerVelocity.y * deltaTime;
 }
 
 
@@ -163,8 +159,8 @@ void Game::Render() {
 	SDL_FreeSurface(surface);
 
 	SDL_Rect destRect = {
-		static_cast<int>(playerPos.x),
-		static_cast<int>(playerPos.y),
+		10,
+		20,
 		32,
 		32 };
 	//SDL_Rect srcRect = { 288 * frame, 128, 288, 128 };

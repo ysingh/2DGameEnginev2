@@ -1,4 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
 #include "Logger.h"
 
 // TODO(yudi) : At some point I should make a ansi color format specifier.
