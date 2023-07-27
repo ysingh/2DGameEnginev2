@@ -80,6 +80,11 @@ void Game::Destroy() {
 }
 
 void Game::Setup() {
+	// TODO:
+	// Entity tank = registry.CreateEntity()
+	// tank.AddComponent<TransformComponent>()
+	// tank.AddComponent<SpriteComponent>()
+	// tank.AddComponent<ColliderComponent()
 }
 
 void Game::Run() {
@@ -143,6 +148,11 @@ void Game::Update() {
 
 	// Store the current frame time
 	millisecsPreviousFrame = SDL_GetTicks();
+
+	// TODO:
+	// MovementSystem.Update()
+	// CollisionSystem.Update()
+	// DamageSystem.Update()
 }
 
 
