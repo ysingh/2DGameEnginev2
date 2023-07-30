@@ -10,6 +10,7 @@
 Game::Game() {
 	isRunning = false;
 	Logger::Log("Game constructor called");
+	registry = new Registry();
 }
 
 Game::~Game() {
@@ -80,11 +81,9 @@ void Game::Destroy() {
 }
 
 void Game::Setup() {
-	// TODO:
-	// Entity tank = registry.CreateEntity()
-	// tank.AddComponent<TransformComponent>()
-	// tank.AddComponent<SpriteComponent>()
-	// tank.AddComponent<ColliderComponent()
+	// TODO: Create some entities
+	Entity tank = registry->CreateEntity();
+	Entity truct = registry->CreateEntity();
 }
 
 void Game::Run() {
