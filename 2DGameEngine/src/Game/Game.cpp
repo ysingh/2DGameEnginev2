@@ -3,6 +3,8 @@
 #include "../Logger/Logger.h"
 #include "Game.h"
 #include "../ECS/ECS.h"
+#include "../Components/TransformComponent.h"
+#include "../Components/RigidBodyComponent.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -10,7 +12,7 @@
 Game::Game() {
 	isRunning = false;
 	Logger::Log("Game constructor called");
-	registry = new Registry();
+	registry = std::make_unique<Registry>();
 }
 
 Game::~Game() {
@@ -83,7 +85,16 @@ void Game::Destroy() {
 void Game::Setup() {
 	// TODO: Create some entities
 	Entity tank = registry->CreateEntity();
-	Entity truct = registry->CreateEntity();
+	registry->AddComponent<TransformComponent>(
+		tank,
+		glm::vec2(10.0, 30.0),
+		glm::vec2(1.0, 1.0),
+		0.0);
+
+	registry->AddComponent<RigidBodyComponent>(tank);
+
+	Entity truck = registry->CreateEntity();
+	registry->AddComponent<TransformComponent>(truck);
 }
 
 void Game::Run() {
