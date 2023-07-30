@@ -5,6 +5,7 @@
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidBodyComponent.h"
+#include "../Systems/MovementSystem.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -83,6 +84,9 @@ void Game::Destroy() {
 }
 
 void Game::Setup() {
+	// Add the systems that need to be processed in our game
+	registry->AddSystem<MovementSystem>();
+
 	// TODO: Create some entities
 	Entity tank = registry->CreateEntity();
 	/*
@@ -102,7 +106,7 @@ void Game::Setup() {
 	truck.AddComponent<TransformComponent>(glm::vec2(2.0, 10.0));
 	truck.AddComponent<RigidBodyComponent>(glm::vec2(2.0, 10.0));
 
-	truck.RemoveComponent<TransformComponent>();
+	//truck.RemoveComponent<TransformComponent>();
 }
 
 void Game::Run() {
@@ -167,10 +171,11 @@ void Game::Update() {
 	// Store the current frame time
 	millisecsPreviousFrame = SDL_GetTicks();
 
-	// TODO:
-	// MovementSystem.Update()
-	// CollisionSystem.Update()
-	// DamageSystem.Update()
+	// Ask all system to update
+	registry->GetSystem<MovementSystem>().Update(deltaTime);
+	
+	// Update the entities in the registry
+	registry->Update();
 }
 
 

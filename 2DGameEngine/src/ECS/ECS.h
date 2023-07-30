@@ -366,12 +366,12 @@ void Entity::RemoveComponent() {
 
 template <typename TComponent> 
 bool Entity::HasComponent() const {
-	registry->HasComponent<TComponent>(*this);
+	return registry->HasComponent<TComponent>(*this);
 }
  
 template <typename TComponent>
 TComponent& Entity::GetComponent() const {
-	registry->GetComponent<TComponent>(*this);
+	return registry->GetComponent<TComponent>(*this);
 }
 
 #endif
