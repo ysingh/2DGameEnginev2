@@ -3,6 +3,9 @@
 #include "../Logger/Logger.h"
 #include "Game.h"
 #include "../ECS/ECS.h"
+#include "../Components/TransformComponent.h"
+#include "../Components/RigidBodyComponent.h"
+#include "../Systems/MovementSystem.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -10,7 +13,7 @@
 Game::Game() {
 	isRunning = false;
 	Logger::Log("Game constructor called");
-	registry = new Registry();
+	registry = std::make_unique<Registry>();
 }
 
 Game::~Game() {
@@ -81,9 +84,29 @@ void Game::Destroy() {
 }
 
 void Game::Setup() {
+	// Add the systems that need to be processed in our game
+	registry->AddSystem<MovementSystem>();
+
 	// TODO: Create some entities
 	Entity tank = registry->CreateEntity();
-	Entity truct = registry->CreateEntity();
+	/*
+	registry->AddComponent<TransformComponent>(
+		tank,
+		glm::vec2(10.0, 30.0),
+		glm::vec2(1.0, 1.0),
+		0.0);
+
+	registry->AddComponent<RigidBodyComponent>(tank);
+	*/
+	tank.AddComponent<TransformComponent>(glm::vec2(10.0, 30.0), glm::vec2(1.0, 1.0), 0.0);
+	tank.AddComponent<RigidBodyComponent>(glm::vec2(10.0, 10.0));
+
+	Entity truck = registry->CreateEntity();
+	//registry->AddComponent<TransformComponent>(truck);
+	truck.AddComponent<TransformComponent>(glm::vec2(2.0, 10.0));
+	truck.AddComponent<RigidBodyComponent>(glm::vec2(2.0, 10.0));
+
+	//truck.RemoveComponent<TransformComponent>();
 }
 
 void Game::Run() {
@@ -148,10 +171,11 @@ void Game::Update() {
 	// Store the current frame time
 	millisecsPreviousFrame = SDL_GetTicks();
 
-	// TODO:
-	// MovementSystem.Update()
-	// CollisionSystem.Update()
-	// DamageSystem.Update()
+	// Ask all system to update
+	registry->GetSystem<MovementSystem>().Update(deltaTime);
+	
+	// Update the entities in the registry
+	registry->Update();
 }
 
 

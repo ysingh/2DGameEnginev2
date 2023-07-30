@@ -18,7 +18,9 @@ void System::RemoveEntityFromSystem(Entity entity) {
 Entity Registry::CreateEntity() {
 	int entityId = numEntities++;
 
-	Entity entity { entityId };
+	Entity entity(entityId);
+	entity.registry = this;
+
 	entitiesToBeAdded.insert(entity);
 
 	if (entityId >= entityComponentSignatures.size()) {
