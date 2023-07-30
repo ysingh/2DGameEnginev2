@@ -12,6 +12,15 @@
 constexpr unsigned int MAX_COMPONENTS = 32;
 typedef std::bitset<MAX_COMPONENTS> Signature;
 
+
+/*
+* 
+* ===============================================================================
+* +																				+
+* +						COMPONENT												+
+* +																				+
+* ===============================================================================
+*/
 struct IComponent {
 protected:
 	static int nextId;
@@ -26,6 +35,18 @@ public:
 	}
 };
 
+/*
+*
+* ===============================================================================
+* +																				+
+* +						ENTITY													+
+* +																				+
+* ===============================================================================
+*/
+
+// Forward declaration of registry so we can use it's type in Entity
+//class Registry;
+
 class Entity {
 private:
 	int id;
@@ -37,7 +58,23 @@ public:
 	bool operator <(const Entity& other) const { return id < other.id;  }
 	const int GetId() const { return id; }
 
+	template <typename TComponent, typename ...TArgs> void AddComponent(TArgs&& ...args);
+	template <typename TComponent> void RemoveComponent();
+	template <typename TComponent> bool HasComponent() const;
+	template <typename TComponent> TComponent& GetComponent() const;
+
+	// Instead of forward declaring registry we can declare and use it here
+	class Registry* registry;
 };
+
+/*
+*
+* ===============================================================================
+* +																				+
+* +						SYSTEM													+
+* +																				+
+* ===============================================================================
+*/
 
 class System {
 private:
@@ -54,6 +91,15 @@ public:
 
 	template <typename TComponent> void RequireComponent();
 };
+
+/*
+*
+* ===============================================================================
+* +																				+
+* +						POOL													+
+* +																				+
+* ===============================================================================
+*/
 
 class IPool {
 public:
@@ -108,6 +154,15 @@ public:
 	}
 };
 
+/*
+*
+* ===============================================================================
+* +																				+
+* +						REGISTRY												+
+* +																				+
+* ===============================================================================
+*/
+
 class Registry {
 private:
 	int numEntities = 0;
@@ -135,7 +190,8 @@ public:
 
 	template <typename TComponent, typename ...TArgs> void AddComponent(Entity entity, TArgs&& ...args);
 	template <typename TComponent> void RemoveComponent(Entity entity);
-	template <typename TComponent> bool HasComponent(Entity entity);
+	template <typename TComponent> bool HasComponent(Entity entity) const;
+	template <typename TComponent> TComponent& GetComponent(Entity entity) const;
 	
 	/*
 	void KillEntity(Entity entity);
@@ -148,6 +204,15 @@ public:
 
 	void AddEntityToSystems(Entity entity);
 };
+
+/*
+*
+* ===============================================================================
+* +																				+
+* +						TEMPLATE FUNCTION DEFS									+
+* +																				+
+* ===============================================================================
+*/
 
 template <typename TComponent>
 void System::RequireComponent() {
@@ -200,8 +265,6 @@ void Registry::AddComponent(Entity entity, TArgs&& ... args) {
 	std::string tname = typeid(TComponent).name();
 	Logger::Log("Component Id: " + std::to_string(componentId) + " of TYPE: " + tname +
 		" was added to entity: " + std::to_string(entityId));
-	
-	Logger::Log("Type is: " + tname);
 }
 
 template <typename TComponent>
@@ -222,11 +285,11 @@ void Registry::RemoveComponent(Entity entity) {
 
 	// For now we leave the memory as is and just set the signature to false
 	entityComponentSignatures[entityId].set(componentId, false);
-
+	Logger::Log("Component with ID: " + std::to_string(componentId) + " was removed from ENTITYID: " + std::to_string(entityId));
 }
 
 template <typename TComponent>
-bool Registry::HasComponent(Entity entity) {
+bool Registry::HasComponent(Entity entity) const {
 	const auto componentId = Component<TComponent>::GetId();
 	const auto entityId = entity.GetId();
 
@@ -244,6 +307,18 @@ bool Registry::HasComponent(Entity entity) {
 		// Can also just check the signature - which is what i will do because
 		// of how removeComponent is written
 		return entityComponentSignatures[entityId].test(componentId);
+}
+
+template <typename TComponent>
+TComponent& Registry::GetComponent(Entity entity) const {
+	const auto componentId = Component<TComponent>::GetId();
+	const auto entityId = entity.GetId();
+
+	auto componentPool = std::static_pointer_cast<Pool<TComponent>>(componentPools[componentId]);
+	return componentPool->Get(entityId);
+
+	// Why can't we just do this?????
+	//return componentPools[componentId][entityId];
 }
 
 template <typename TSystem, typename ...TArgs>
@@ -269,7 +344,6 @@ bool Registry::HasSystem() const {
 	// other way
 	// return systems.count(typeid(TSystem)) == 1;
 	return systems.find(std::type_index(typeid(TSystem))) != systems.end();
-	
 }
 
 template <typename TSystem>
@@ -280,5 +354,24 @@ TSystem& Registry::GetSystem() const {
 	return *(std::static_pointer_cast<TSystem>(system->second));
 }
 
+template <typename TComponent, typename ...TArgs> 
+void Entity::AddComponent(TArgs&& ...args) {
+	registry->AddComponent<TComponent>(*this, std::forward<TArgs>(args)...);
+}
+
+template <typename TComponent>
+void Entity::RemoveComponent() {
+	registry->RemoveComponent<TComponent>(*this);
+}
+
+template <typename TComponent> 
+bool Entity::HasComponent() const {
+	registry->HasComponent<TComponent>(*this);
+}
+ 
+template <typename TComponent>
+TComponent& Entity::GetComponent() const {
+	registry->GetComponent<TComponent>(*this);
+}
 
 #endif

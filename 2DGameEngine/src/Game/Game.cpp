@@ -85,6 +85,7 @@ void Game::Destroy() {
 void Game::Setup() {
 	// TODO: Create some entities
 	Entity tank = registry->CreateEntity();
+	/*
 	registry->AddComponent<TransformComponent>(
 		tank,
 		glm::vec2(10.0, 30.0),
@@ -92,9 +93,16 @@ void Game::Setup() {
 		0.0);
 
 	registry->AddComponent<RigidBodyComponent>(tank);
+	*/
+	tank.AddComponent<TransformComponent>(glm::vec2(10.0, 30.0), glm::vec2(1.0, 1.0), 0.0);
+	tank.AddComponent<RigidBodyComponent>(glm::vec2(10.0, 10.0));
 
 	Entity truck = registry->CreateEntity();
-	registry->AddComponent<TransformComponent>(truck);
+	//registry->AddComponent<TransformComponent>(truck);
+	truck.AddComponent<TransformComponent>(glm::vec2(2.0, 10.0));
+	truck.AddComponent<RigidBodyComponent>(glm::vec2(2.0, 10.0));
+
+	truck.RemoveComponent<TransformComponent>();
 }
 
 void Game::Run() {
