@@ -6,6 +6,7 @@
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidBodyComponent.h"
 #include "../Systems/MovementSystem.h"
+#include "../Systems/RenderSystem.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -38,8 +39,11 @@ void Game::Initialize() {
 	// because we will be trying to fill all those pixels with game data
 	// 
 	// If we keep window size fixed and let sdl scale it then all resolutions will see the same size
-	windowWidth = WINDOW_WIDTH; //displayMode.w;
-	windowHeight = WINDOW_HEIGHT; //displayMode.h;
+	//windowWidth = WINDOW_WIDTH; 
+	windowWidth = displayMode.w;
+	//windowHeight = WINDOW_HEIGHT; //displayMode.h;
+	windowHeight = displayMode.h;
+	refreshRate = displayMode.refresh_rate;
 
 	// passing NULL for the first param creates a window without titlebar etc.
 	// https://wiki.libsdl.org/SDL2/SDL_CreateWindow
@@ -62,7 +66,7 @@ void Game::Initialize() {
 	// and scale our window to be the size of the screen (as big as possible while preserving aspect ratio)
 	// Is this the same as setting SDL_CreateWindow flag to SDL_WINDOW_FULLSCREEN
 
-	//SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+	SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
 	// https://wiki.libsdl.org/SDL2/SDL_CreateRenderer
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -72,7 +76,8 @@ void Game::Initialize() {
 		return;
 	}
 	// Set the renderer's draw color
-	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
+	// If this is commented out this means its set in the render function as its changing frame by frame
+	//SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 
 	isRunning = true;
 }
@@ -86,6 +91,7 @@ void Game::Destroy() {
 void Game::Setup() {
 	// Add the systems that need to be processed in our game
 	registry->AddSystem<MovementSystem>();
+	registry->AddSystem<RenderSystem>();
 
 	// TODO: Create some entities
 	Entity tank = registry->CreateEntity();
@@ -100,12 +106,13 @@ void Game::Setup() {
 	*/
 	tank.AddComponent<TransformComponent>(glm::vec2(10.0, 30.0), glm::vec2(1.0, 1.0), 0.0);
 	tank.AddComponent<RigidBodyComponent>(glm::vec2(10.0, 10.0));
+	tank.AddComponent<SpriteComponent>("", 10, 10, glm::vec4(255, 0, 0, 255));
 
 	Entity truck = registry->CreateEntity();
 	//registry->AddComponent<TransformComponent>(truck);
 	truck.AddComponent<TransformComponent>(glm::vec2(2.0, 10.0));
 	truck.AddComponent<RigidBodyComponent>(glm::vec2(2.0, 10.0));
-
+	truck.AddComponent<SpriteComponent>("", 20, 20, glm::vec4(0, 255, 0, 255));
 	//truck.RemoveComponent<TransformComponent>();
 }
 
@@ -171,7 +178,7 @@ void Game::Update() {
 	// Store the current frame time
 	millisecsPreviousFrame = SDL_GetTicks();
 
-	// Ask all system to update
+	// Ask all simulation systems to update
 	registry->GetSystem<MovementSystem>().Update(deltaTime);
 	
 	// Update the entities in the registry
@@ -180,11 +187,14 @@ void Game::Update() {
 
 
 void Game::Render() {
-	// This is now being set once in the init function since it shouldn't change frame by frame
-	// SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
+	// If this is commented out this is now being set once in the init function since it shouldn't change frame by frame
+	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 
 	// It's recommended to clear the rederer before redrawing the current frame
 	SDL_RenderClear(renderer);
+
+	// Ask all the render system to render
+	registry->GetSystem<RenderSystem>().Render(renderer);
 	
 	// TODO: Render game objects.. 
 	SDL_RenderPresent(renderer);

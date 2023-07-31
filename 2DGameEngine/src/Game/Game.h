@@ -27,6 +27,7 @@ public:
 	void Render();
 	int windowWidth;
 	int windowHeight;
+	int refreshRate = 60;
 };
 
 #endif
