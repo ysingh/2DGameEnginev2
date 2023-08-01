@@ -96,7 +96,7 @@ void Game::LoadLevel(int level) {
 	assetStore->AddTexture(renderer, "truck-ford-right", "./assets/images/truck-ford-right.png");
 	assetStore->AddTexture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
 
-	FILE* f = fopen("./assets/tilemaps/jungle.map", "r");
+	FILE* f = fopen("./assets/tilemaps/jungle.map", "rb");
 	fseek(f, 0, SEEK_END);
 	long fsz = ftell(f);
 	rewind(f);
@@ -119,9 +119,14 @@ void Game::LoadLevel(int level) {
 			tileIndex = std::stoi(dest);
 			srcX = (tileIndex % 10) * 32;
 			srcY = floor(tileIndex / 10) * 32;
+			
 			Entity e = registry->CreateEntity();
 			e.AddComponent<TransformComponent>(glm::vec2(col * 32.0 * tileScaleX, row * 32.0 * tileScaleY), glm::vec2(tileScaleX, tileScaleY));
 			e.AddComponent<SpriteComponent>("jungle-tilemap", 32, 32, srcX, srcY);
+
+			currentStringStart = 0;
+			memset(dest, '\0', 100 * sizeof(char));
+
 			if (buf[i] == ',') {
 				col++;
 			}
@@ -129,8 +134,6 @@ void Game::LoadLevel(int level) {
 				col = 0;
 				row++;
 			}
-			currentStringStart = 0;
-			memset(dest, '\0', 100 * sizeof(char));
 		}
 		else {
 			dest[currentStringStart++] = buf[i];
@@ -141,7 +144,7 @@ void Game::LoadLevel(int level) {
 	e.AddComponent<TransformComponent>(glm::vec2(col * 32.0 * tileScaleX, row * 32.0 * tileScaleY), glm::vec2(tileScaleX, tileScaleY));
 	e.AddComponent<SpriteComponent>("jungle-tilemap", 32, 32, srcX, srcY);
 
-
+	free(buf);
 
 	// Add the systems that need to be processed in our game
 	registry->AddSystem<MovementSystem>();
