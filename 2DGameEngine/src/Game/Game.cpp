@@ -89,10 +89,12 @@ void Game::Destroy() {
 	SDL_Quit();
 }
 
-void Game::Setup() {
+void Game::LoadLevel(int level) {
 	// Add Assets
 	assetStore->AddTexture(renderer, "tank-tiger-right", "./assets/images/tank-tiger-right.png");
 	assetStore->AddTexture(renderer, "truck-ford-right", "./assets/images/truck-ford-right.png");
+	assetStore->AddTexture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
+
 
 	// Add the systems that need to be processed in our game
 	registry->AddSystem<MovementSystem>();
@@ -119,6 +121,10 @@ void Game::Setup() {
 	truck.AddComponent<RigidBodyComponent>(glm::vec2(2.0, 10.0));
 	truck.AddComponent<SpriteComponent>("truck-ford-right", 32, 32);
 	//truck.RemoveComponent<TransformComponent>();
+}
+
+void Game::Setup() {
+	LoadLevel(1);
 }
 
 void Game::Run() {
