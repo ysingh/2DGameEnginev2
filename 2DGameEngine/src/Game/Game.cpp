@@ -15,6 +15,7 @@ Game::Game() {
 	isRunning = false;
 	Logger::Log("Game constructor called");
 	registry = std::make_unique<Registry>();
+	assetStore = std::make_unique<AssetStore>();
 }
 
 Game::~Game() {
@@ -77,7 +78,7 @@ void Game::Initialize() {
 	}
 	// Set the renderer's draw color
 	// If this is commented out this means its set in the render function as its changing frame by frame
-	//SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
+	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 
 	isRunning = true;
 }
@@ -89,6 +90,10 @@ void Game::Destroy() {
 }
 
 void Game::Setup() {
+	// Add Assets
+	assetStore->AddTexture(renderer, "tank-tiger-right", "./assets/images/tank-tiger-right.png");
+	assetStore->AddTexture(renderer, "truck-ford-right", "./assets/images/truck-ford-right.png");
+
 	// Add the systems that need to be processed in our game
 	registry->AddSystem<MovementSystem>();
 	registry->AddSystem<RenderSystem>();
@@ -104,15 +109,15 @@ void Game::Setup() {
 
 	registry->AddComponent<RigidBodyComponent>(tank);
 	*/
-	tank.AddComponent<TransformComponent>(glm::vec2(10.0, 30.0), glm::vec2(1.0, 1.0), 0.0);
-	tank.AddComponent<RigidBodyComponent>(glm::vec2(10.0, 10.0));
-	tank.AddComponent<SpriteComponent>("", 10, 10, glm::vec4(255, 0, 0, 255));
+	tank.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0), glm::vec2(1.0, 1.0), 0.0);
+	tank.AddComponent<RigidBodyComponent>(glm::vec2(40.0, 0.0));
+	tank.AddComponent<SpriteComponent>("tank-tiger-right", 32, 32);
 
 	Entity truck = registry->CreateEntity();
 	//registry->AddComponent<TransformComponent>(truck);
 	truck.AddComponent<TransformComponent>(glm::vec2(2.0, 10.0));
 	truck.AddComponent<RigidBodyComponent>(glm::vec2(2.0, 10.0));
-	truck.AddComponent<SpriteComponent>("", 20, 20, glm::vec4(0, 255, 0, 255));
+	truck.AddComponent<SpriteComponent>("truck-ford-right", 32, 32);
 	//truck.RemoveComponent<TransformComponent>();
 }
 
@@ -188,13 +193,13 @@ void Game::Update() {
 
 void Game::Render() {
 	// If this is commented out this is now being set once in the init function since it shouldn't change frame by frame
-	SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
+	//SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
 
 	// It's recommended to clear the rederer before redrawing the current frame
 	SDL_RenderClear(renderer);
 
 	// Ask all the render system to render
-	registry->GetSystem<RenderSystem>().Render(renderer);
+	registry->GetSystem<RenderSystem>().Render(renderer, assetStore);
 	
 	// TODO: Render game objects.. 
 	SDL_RenderPresent(renderer);

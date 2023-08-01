@@ -2,19 +2,28 @@
 #define SPRITECOMPONENT_H
 
 #include "glm/glm.hpp"
+#include <SDL.h>
+#include <string>
 
 struct SpriteComponent {
-	SDL_Surface* surface;
+	std::string assetId;
 	int width;
 	int height;
+	SDL_Rect srcRect; 
 	glm::vec4 color;
 
-	SpriteComponent(std::string path = "", int width = 0, int height = 0, glm::vec4 color = glm::vec4(255, 255, 255, 255)) {
+	SpriteComponent(std::string assetId = "",
+		int width = 0,
+		int height = 0,
+		int srcRectX = 0,
+		int srcRectY = 0,
+		glm::vec4 color = glm::vec4(255, 255, 255, 255)
+	){
+		this->assetId = assetId;
 		this->width = width;
 		this->height = height;
 		this->color = color;
-
-		//SDL_Surface* surface =  IMG_Load(path.c_str());
+		srcRect = { srcRectX, srcRectY, width, height };
 	}
 };
 #endif
