@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <glm/glm.hpp>
 #include <SDL_image.h>
 #include "../Logger/Logger.h"
@@ -44,7 +45,7 @@ void Game::Initialize() {
 	windowWidth = displayMode.w;
 	//windowHeight = WINDOW_HEIGHT; //displayMode.h;
 	windowHeight = displayMode.h;
-	refreshRate = displayMode.refresh_rate;
+	//refreshRate = displayMode.refresh_rate;
 
 	// passing NULL for the first param creates a window without titlebar etc.
 	// https://wiki.libsdl.org/SDL2/SDL_CreateWindow
@@ -67,7 +68,7 @@ void Game::Initialize() {
 	// and scale our window to be the size of the screen (as big as possible while preserving aspect ratio)
 	// Is this the same as setting SDL_CreateWindow flag to SDL_WINDOW_FULLSCREEN
 
-	SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+	//SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
 	// https://wiki.libsdl.org/SDL2/SDL_CreateRenderer
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -94,6 +95,48 @@ void Game::LoadLevel(int level) {
 	assetStore->AddTexture(renderer, "tank-tiger-right", "./assets/images/tank-tiger-right.png");
 	assetStore->AddTexture(renderer, "truck-ford-right", "./assets/images/truck-ford-right.png");
 	assetStore->AddTexture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
+
+	FILE* f = fopen("./assets/tilemaps/jungle.map", "r");
+	fseek(f, 0, SEEK_END);
+	long fsz = ftell(f);
+	Logger::Log("File size is: " + std::to_string(fsz));
+	rewind(f);
+	char* buf = (char*)malloc(fsz);
+	fread(buf, fsz, 1, f);
+
+	int currentStringStart = 0;
+	char dest[100] = { '\0' };
+	int col = 0;
+	int row = 0;
+
+	for (int i = 0; i < fsz; ++i) {
+		if (buf[i] == ',' || buf[i] == '\n') {
+			int tileIndex = std::stoi(dest);
+			int srcX = (tileIndex % 10) * 32;
+			int srcY = floor(tileIndex / 10) * 32;
+			Entity e = registry->CreateEntity();
+			Logger::Log("TileIndex:" + std::to_string(tileIndex) + " srcX: " + std::to_string(srcX) + " srcY: " + std::to_string(srcY) + " col(x): " + std::to_string(col * 32.0) + " row(y): " + std::to_string(row * 32.0));
+			e.AddComponent<TransformComponent>(glm::vec2(col * 32.0, row * 32.0));
+			e.AddComponent<SpriteComponent>("jungle-tilemap", 32, 32, srcX, srcY);
+			if (buf[i] == ',') {
+				col++;
+			}
+			if (buf[i] == '\n') {
+				col = 0;
+				row++;
+			}
+			if (i + i < fsz) {
+				currentStringStart = 0;
+				memset(dest, '\0', 100 * sizeof(char));
+			}
+			else {
+				break;
+			}
+		}
+		else {
+			dest[currentStringStart++] = buf[i];
+		}
+	}
 
 
 	// Add the systems that need to be processed in our game
