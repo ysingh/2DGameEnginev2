@@ -41,10 +41,10 @@ void Game::Initialize() {
 	// because we will be trying to fill all those pixels with game data
 	// 
 	// If we keep window size fixed and let sdl scale it then all resolutions will see the same size
-	//windowWidth = WINDOW_WIDTH; 
-	windowWidth = displayMode.w;
-	//windowHeight = WINDOW_HEIGHT; //displayMode.h;
-	windowHeight = displayMode.h;
+	windowWidth = WINDOW_WIDTH; 
+	//windowWidth = displayMode.w;
+	windowHeight = WINDOW_HEIGHT; //displayMode.h;
+	//windowHeight = displayMode.h;
 	//refreshRate = displayMode.refresh_rate;
 
 	// passing NULL for the first param creates a window without titlebar etc.
@@ -108,35 +108,37 @@ void Game::LoadLevel(int level) {
 	char dest[100] = { '\0' };
 	int col = 0;
 	int row = 0;
+	int tileIndex;
+	int srcX;
+	int srcY;
 
 	for (int i = 0; i < fsz; ++i) {
 		if (buf[i] == ',' || buf[i] == '\n') {
-			int tileIndex = std::stoi(dest);
-			int srcX = (tileIndex % 10) * 32;
-			int srcY = floor(tileIndex / 10) * 32;
+			tileIndex = std::stoi(dest);
+			srcX = (tileIndex % 10) * 32;
+			srcY = floor(tileIndex / 10) * 32;
 			Entity e = registry->CreateEntity();
-			Logger::Log("TileIndex:" + std::to_string(tileIndex) + " srcX: " + std::to_string(srcX) + " srcY: " + std::to_string(srcY) + " col(x): " + std::to_string(col * 32.0) + " row(y): " + std::to_string(row * 32.0));
 			e.AddComponent<TransformComponent>(glm::vec2(col * 32.0, row * 32.0));
 			e.AddComponent<SpriteComponent>("jungle-tilemap", 32, 32, srcX, srcY);
 			if (buf[i] == ',') {
 				col++;
 			}
-			if (buf[i] == '\n') {
+			else if (buf[i] == '\n') {
 				col = 0;
 				row++;
 			}
-			if (i + i < fsz) {
-				currentStringStart = 0;
-				memset(dest, '\0', 100 * sizeof(char));
-			}
-			else {
-				break;
-			}
+			currentStringStart = 0;
+			memset(dest, '\0', 100 * sizeof(char));
 		}
 		else {
 			dest[currentStringStart++] = buf[i];
 		}
 	}
+	// We should have the last tile in dest
+	Entity e = registry->CreateEntity();
+	e.AddComponent<TransformComponent>(glm::vec2(col * 32.0, row * 32.0));
+	e.AddComponent<SpriteComponent>("jungle-tilemap", 32, 32, srcX, srcY);
+
 
 
 	// Add the systems that need to be processed in our game
