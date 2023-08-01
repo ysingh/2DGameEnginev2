@@ -20,14 +20,6 @@ public:
 			const auto sprite = entity.GetComponent<SpriteComponent>();
 			
 			//SDL_SetRenderDrawColor(renderer, sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a);
-			
-
-			// set the src rect
-			SDL_Rect srcRect = {
-				0,
-				0,
-				
-			};
 
 			// set the destination rect with the x, y position to be rendered
 			SDL_Rect destRect = {

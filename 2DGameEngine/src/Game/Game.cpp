@@ -41,10 +41,10 @@ void Game::Initialize() {
 	// because we will be trying to fill all those pixels with game data
 	// 
 	// If we keep window size fixed and let sdl scale it then all resolutions will see the same size
-	windowWidth = WINDOW_WIDTH; 
-	//windowWidth = displayMode.w;
-	windowHeight = WINDOW_HEIGHT; //displayMode.h;
-	//windowHeight = displayMode.h;
+	//windowWidth = WINDOW_WIDTH; 
+	windowWidth = displayMode.w;
+	//windowHeight = WINDOW_HEIGHT; //displayMode.h;
+	windowHeight = displayMode.h;
 	//refreshRate = displayMode.refresh_rate;
 
 	// passing NULL for the first param creates a window without titlebar etc.
@@ -99,12 +99,14 @@ void Game::LoadLevel(int level) {
 	FILE* f = fopen("./assets/tilemaps/jungle.map", "r");
 	fseek(f, 0, SEEK_END);
 	long fsz = ftell(f);
-	Logger::Log("File size is: " + std::to_string(fsz));
 	rewind(f);
 	char* buf = (char*)malloc(fsz);
 	fread(buf, fsz, 1, f);
 
 	int currentStringStart = 0;
+	float tileScaleX = windowWidth / 800.0;
+	float tileScaleY = windowHeight / 600.0;
+	
 	char dest[100] = { '\0' };
 	int col = 0;
 	int row = 0;
@@ -118,7 +120,7 @@ void Game::LoadLevel(int level) {
 			srcX = (tileIndex % 10) * 32;
 			srcY = floor(tileIndex / 10) * 32;
 			Entity e = registry->CreateEntity();
-			e.AddComponent<TransformComponent>(glm::vec2(col * 32.0, row * 32.0));
+			e.AddComponent<TransformComponent>(glm::vec2(col * 32.0 * tileScaleX, row * 32.0 * tileScaleY), glm::vec2(tileScaleX, tileScaleY));
 			e.AddComponent<SpriteComponent>("jungle-tilemap", 32, 32, srcX, srcY);
 			if (buf[i] == ',') {
 				col++;
@@ -136,7 +138,7 @@ void Game::LoadLevel(int level) {
 	}
 	// We should have the last tile in dest
 	Entity e = registry->CreateEntity();
-	e.AddComponent<TransformComponent>(glm::vec2(col * 32.0, row * 32.0));
+	e.AddComponent<TransformComponent>(glm::vec2(col * 32.0 * tileScaleX, row * 32.0 * tileScaleY), glm::vec2(tileScaleX, tileScaleY));
 	e.AddComponent<SpriteComponent>("jungle-tilemap", 32, 32, srcX, srcY);
 
 
