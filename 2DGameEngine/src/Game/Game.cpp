@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 #include <SDL_image.h>
+#include <fstream>
 #include "../Logger/Logger.h"
 #include "Game.h"
 #include "../ECS/ECS.h"
@@ -40,10 +41,10 @@ void Game::Initialize() {
 	// because we will be trying to fill all those pixels with game data
 	// 
 	// If we keep window size fixed and let sdl scale it then all resolutions will see the same size
-	//windowWidth = WINDOW_WIDTH; 
-	windowWidth = displayMode.w;
-	//windowHeight = WINDOW_HEIGHT; //displayMode.h;
-	windowHeight = displayMode.h;
+	windowWidth = WINDOW_WIDTH; 
+	//windowWidth = displayMode.w;
+	windowHeight = WINDOW_HEIGHT; //displayMode.h;
+	//windowHeight = displayMode.h;
 	refreshRate = displayMode.refresh_rate;
 
 	// passing NULL for the first param creates a window without titlebar etc.
@@ -93,7 +94,33 @@ void Game::LoadLevel(int level) {
 	// Add Assets
 	assetStore->AddTexture(renderer, "tank-tiger-right", "./assets/images/tank-tiger-right.png");
 	assetStore->AddTexture(renderer, "truck-ford-right", "./assets/images/truck-ford-right.png");
-	assetStore->AddTexture(renderer, "jungle-tilemap", "./assets/tilemaps/jungle.png");
+	assetStore->AddTexture(renderer, "tilemap-image", "./assets/tilemaps/jungle.png");
+
+	// Load the tilemap
+	int tileSize = 32;
+	double tileScale = 2.0;
+	int mapNumCols = 25;
+	int mapNumRows = 20;
+
+	std::fstream mapFile;
+	mapFile.open("./assets/tilemaps/jungle.map");
+
+	for (int y = 0; y < mapNumRows; y++) {
+		for (int x = 0; x < mapNumCols; x++) {
+			char ch;
+			mapFile.get(ch);
+			int srcRectY = std::atoi(&ch) * tileSize;
+			mapFile.get(ch);
+			int srcRectX = std::atoi(&ch) * tileSize;
+			mapFile.ignore();
+
+			Entity tile = registry->CreateEntity();
+			tile.AddComponent<TransformComponent>(glm::vec2(x * tileScale * tileSize, y * tileScale * tileSize), glm::vec2(tileScale, tileScale), 0);
+			tile.AddComponent<SpriteComponent>("tilemap-image", tileSize, tileSize, srcRectX, srcRectY);
+		}
+	}
+
+	mapFile.close();
 
 
 	// Add the systems that need to be processed in our game
