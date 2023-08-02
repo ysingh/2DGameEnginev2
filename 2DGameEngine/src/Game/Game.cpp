@@ -141,8 +141,13 @@ void Game::LoadLevel(int level) {
 
 	auto knight = registry->CreateEntity();
 	knight.AddComponent<TransformComponent>(glm::vec2(0.0, 0.0), glm::vec2(1.5, 1.5));
+
+	// Right now the knight can only have one sprite component
+	//knight.AddComponent<SpriteComponent>("knight", 288, 128, 0, 128 * 5);
+	// The last component added wins
 	knight.AddComponent<SpriteComponent>("knight", 288, 128, 0, 128);
-	knight.AddComponent<AnimationComponent>(8, 1);
+	// Need a way to change the sprite value when the knight is in walk idle and attack mode
+	knight.AddComponent<AnimationComponent>(8, 30);
 
 	// Entity tank = registry->CreateEntity();
 	/* Can also do it this way
