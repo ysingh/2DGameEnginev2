@@ -68,7 +68,7 @@ void Game::Initialize() {
 	// and scale our window to be the size of the screen (as big as possible while preserving aspect ratio)
 	// Is this the same as setting SDL_CreateWindow flag to SDL_WINDOW_FULLSCREEN
 
-	SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+	//SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
 	// https://wiki.libsdl.org/SDL2/SDL_CreateRenderer
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -98,7 +98,7 @@ void Game::LoadLevel(int level) {
 
 	// Load the tilemap
 	int tileSize = 32;
-	double tileScale = 2.0;
+	double tileScale = 1.0;
 	int mapNumCols = 25;
 	int mapNumRows = 20;
 
@@ -116,7 +116,7 @@ void Game::LoadLevel(int level) {
 
 			Entity tile = registry->CreateEntity();
 			tile.AddComponent<TransformComponent>(glm::vec2(x * tileScale * tileSize, y * tileScale * tileSize), glm::vec2(tileScale, tileScale), 0);
-			tile.AddComponent<SpriteComponent>("tilemap-image", tileSize, tileSize, srcRectX, srcRectY);
+			tile.AddComponent<SpriteComponent>("tilemap-image", tileSize, tileSize, srcRectX, srcRectY, 0);
 		}
 	}
 
@@ -140,13 +140,13 @@ void Game::LoadLevel(int level) {
 	*/
 	tank.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0), glm::vec2(1.0, 1.0), 0.0);
 	tank.AddComponent<RigidBodyComponent>(glm::vec2(40.0, 0.0));
-	tank.AddComponent<SpriteComponent>("tank-tiger-right", 32, 32);
+	tank.AddComponent<SpriteComponent>("tank-tiger-right", 32, 32, 0, 0, 1);
 
 	Entity truck = registry->CreateEntity();
 	//registry->AddComponent<TransformComponent>(truck);
 	truck.AddComponent<TransformComponent>(glm::vec2(2.0, 10.0));
 	truck.AddComponent<RigidBodyComponent>(glm::vec2(2.0, 10.0));
-	truck.AddComponent<SpriteComponent>("truck-ford-right", 32, 32);
+	truck.AddComponent<SpriteComponent>("truck-ford-right", 32, 32, 0, 0, 1);
 	//truck.RemoveComponent<TransformComponent>();
 }
 

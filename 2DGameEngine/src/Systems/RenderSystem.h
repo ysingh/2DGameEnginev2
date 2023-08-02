@@ -1,6 +1,7 @@
 #ifndef RENDERSYSTEM_H
 #define RENDERSYSTEM_H
 
+#include <algorithm>
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/SpriteComponent.h"
@@ -15,7 +16,13 @@ public:
 	}
 
 	void Render(SDL_Renderer* renderer, std::unique_ptr<AssetStore>& assetStore) {
-		for (auto entity : GetSystemEntities()) {
+		auto entities = GetSystemEntities();
+		// Sort the entities by order of z index here, in every frame
+		// this might not be good enough
+		std::sort(entities.begin(), entities.end(), [](Entity a, Entity b) {
+			return a.GetComponent<SpriteComponent>().zIndex < b.GetComponent<SpriteComponent>().zIndex;
+		});
+		for (auto entity : entities) {
 			const auto transform = entity.GetComponent<TransformComponent>();
 			const auto sprite = entity.GetComponent<SpriteComponent>();
 			
