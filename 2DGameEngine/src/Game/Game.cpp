@@ -6,8 +6,10 @@
 #include "../ECS/ECS.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidBodyComponent.h"
+#include "../Components/AnimationComponent.h"
 #include "../Systems/MovementSystem.h"
 #include "../Systems/RenderSystem.h"
+#include "../Systems/AnimationSystem.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -100,9 +102,10 @@ void Game::Destroy() {
 
 void Game::LoadLevel(int level) {
 	// Add Assets
-	assetStore->AddTexture(renderer, "tank-tiger-right", "./assets/images/tank-tiger-right.png");
-	assetStore->AddTexture(renderer, "truck-ford-right", "./assets/images/truck-ford-right.png");
+	//assetStore->AddTexture(renderer, "tank-tiger-right", "./assets/images/tank-tiger-right.png");
+	//assetStore->AddTexture(renderer, "truck-ford-right", "./assets/images/truck-ford-right.png");
 	assetStore->AddTexture(renderer, "tilemap-image", "./assets/tilemaps/jungle.png");
+	assetStore->AddTexture(renderer, "knight", "./assets/spritesheets/fire_knight_SpriteSheet_288x128.png");
 
 	// Load the tilemap
 	int tileSize = 32;
@@ -134,10 +137,15 @@ void Game::LoadLevel(int level) {
 	// Add the systems that need to be processed in our game
 	registry->AddSystem<MovementSystem>();
 	registry->AddSystem<RenderSystem>();
+	registry->AddSystem<AnimationSystem>();
 
-	// TODO: Create some entities
-	Entity tank = registry->CreateEntity();
-	/*
+	auto knight = registry->CreateEntity();
+	knight.AddComponent<TransformComponent>(glm::vec2(0.0, 0.0), glm::vec2(1.5, 1.5));
+	knight.AddComponent<SpriteComponent>("knight", 288, 128, 0, 128);
+	knight.AddComponent<AnimationComponent>(8, 1);
+
+	// Entity tank = registry->CreateEntity();
+	/* Can also do it this way
 	registry->AddComponent<TransformComponent>(
 		tank,
 		glm::vec2(10.0, 30.0),
@@ -146,15 +154,16 @@ void Game::LoadLevel(int level) {
 
 	registry->AddComponent<RigidBodyComponent>(tank);
 	*/
-	tank.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0), glm::vec2(1.0, 1.0), 0.0);
-	tank.AddComponent<RigidBodyComponent>(glm::vec2(40.0, 0.0));
-	tank.AddComponent<SpriteComponent>("tank-tiger-right", 32, 32, 0, 0, 1);
+	/**/
+	//tank.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0), glm::vec2(1.0, 1.0), 0.0);
+	//tank.AddComponent<RigidBodyComponent>(glm::vec2(40.0, 0.0));
+	//tank.AddComponent<SpriteComponent>("tank-tiger-right", 32, 32, 0, 0, 1);
 
-	Entity truck = registry->CreateEntity();
+	//Entity truck = registry->CreateEntity();
 	//registry->AddComponent<TransformComponent>(truck);
-	truck.AddComponent<TransformComponent>(glm::vec2(2.0, 10.0));
-	truck.AddComponent<RigidBodyComponent>(glm::vec2(2.0, 10.0));
-	truck.AddComponent<SpriteComponent>("truck-ford-right", 32, 32, 0, 0, 1);
+	//truck.AddComponent<TransformComponent>(glm::vec2(2.0, 10.0));
+	//truck.AddComponent<RigidBodyComponent>(glm::vec2(2.0, 10.0));
+	//truck.AddComponent<SpriteComponent>("truck-ford-right", 32, 32, 0, 0, 1);
 	//truck.RemoveComponent<TransformComponent>();
 }
 
@@ -228,6 +237,7 @@ void Game::Update() {
 
 	// Ask all simulation systems to update
 	registry->GetSystem<MovementSystem>().Update(deltaTime);
+	registry->GetSystem<AnimationSystem>().Update(deltaTime);
 	
 	// Update the entities in the registry
 	registry->Update();
