@@ -9,13 +9,15 @@ struct AnimationComponent {
 	int frameRate;
 	bool isLoop;
 	int startTime;
+	bool play;
 
-	AnimationComponent(int numFrames = 1, int frameRate = 1, bool isLoop = true) {
+	AnimationComponent(int numFrames = 1, int frameRate = 1, bool isLoop = false) {
 		this->numFrames = numFrames;
 		this->currentFrame = 1;
 		this->frameRate = frameRate;
 		this->isLoop = isLoop;
 		this->startTime = SDL_GetTicks();
+		this->play = true;
 	}
 
 };

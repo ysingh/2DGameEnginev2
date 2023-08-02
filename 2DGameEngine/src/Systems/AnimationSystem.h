@@ -15,13 +15,22 @@ public:
 	void Update(double deltaTime) {
 		for (auto entity : GetSystemEntities()) {
 			auto& animation = entity.GetComponent<AnimationComponent>();
-			auto& sprite = entity.GetComponent<SpriteComponent>();
-			int currentTicks = SDL_GetTicks();
-			float animationPlayedForSeconds = (currentTicks - animation.startTime) / 1000.0;
-			if (animationPlayedForSeconds - 1.0/animation.frameRate > 0) {
-				animation.currentFrame = (animation.currentFrame + 1) % animation.numFrames;
-				sprite.srcRect.x = sprite.width * animation.currentFrame;
-				animation.startTime = SDL_GetTicks();
+			if (animation.play) {
+				auto& sprite = entity.GetComponent<SpriteComponent>();
+				float timeinSeconds = (SDL_GetTicks() - animation.startTime) / 1000.0;
+				animation.currentFrame = (int)(timeinSeconds * animation.frameRate);
+				if (animation.isLoop) {
+					animation.currentFrame %= animation.numFrames;
+					sprite.srcRect.x = sprite.width * animation.currentFrame;
+				}
+				else if (animation.currentFrame > animation.numFrames) {
+					animation.currentFrame = 1;
+					sprite.srcRect.x = 0;
+					animation.play = false;
+				}
+				else {
+					sprite.srcRect.x = sprite.width * animation.currentFrame;
+				}
 			}
 		}
 	}
