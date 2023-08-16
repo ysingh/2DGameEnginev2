@@ -102,10 +102,12 @@ void Game::Destroy() {
 
 void Game::LoadLevel(int level) {
 	// Add Assets
-	//assetStore->AddTexture(renderer, "tank-tiger-right", "./assets/images/tank-tiger-right.png");
-	//assetStore->AddTexture(renderer, "truck-ford-right", "./assets/images/truck-ford-right.png");
+	assetStore->AddTexture(renderer, "tank-image", "./assets/images/tank-panther-right.png");
+	assetStore->AddTexture(renderer, "truck-image", "./assets/images/truck-ford-right.png");
+	assetStore->AddTexture(renderer, "chopper-image", "./assets/images/chopper.png");
+	assetStore->AddTexture(renderer, "radar-image", "./assets/images/radar.png");
 	assetStore->AddTexture(renderer, "tilemap-image", "./assets/tilemaps/jungle.png");
-	assetStore->AddTexture(renderer, "knight", "./assets/spritesheets/fire_knight_SpriteSheet_288x128.png");
+	//assetStore->AddTexture(renderer, "knight", "./assets/spritesheets/fire_knight_SpriteSheet_288x128.png");
 
 	// Load the tilemap
 	int tileSize = 32;
@@ -139,15 +141,38 @@ void Game::LoadLevel(int level) {
 	registry->AddSystem<RenderSystem>();
 	registry->AddSystem<AnimationSystem>();
 
-	auto knight = registry->CreateEntity();
-	knight.AddComponent<TransformComponent>(glm::vec2(0.0, 0.0), glm::vec2(1.5, 1.5));
+	//auto knight = registry->CreateEntity();
+	//knight.AddComponent<TransformComponent>(glm::vec2(0.0, 0.0), glm::vec2(1.5, 1.5));
 
 	// Right now the knight can only have one sprite component
 	//knight.AddComponent<SpriteComponent>("knight", 288, 128, 0, 128 * 5);
 	// The last component added wins
-	knight.AddComponent<SpriteComponent>("knight", 288, 128, 0, 128);
+	//knight.AddComponent<SpriteComponent>("knight", 288, 128, 0, 128 * 10);
 	// Need a way to change the sprite value when the knight is in walk idle and attack mode
-	knight.AddComponent<AnimationComponent>(8, 30);
+	//knight.AddComponent<AnimationComponent>(20, 15);
+
+	// Create an entity
+	Entity chopper = registry->CreateEntity();
+	chopper.AddComponent<TransformComponent>(glm::vec2(10.0, 100.0), glm::vec2(1.0, 1.0), 0.0);
+	chopper.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
+	chopper.AddComponent<SpriteComponent>("chopper-image", 32, 32, 1);
+	chopper.AddComponent<AnimationComponent>(2, 15, true);
+
+	Entity radar = registry->CreateEntity();
+	radar.AddComponent<TransformComponent>(glm::vec2(windowWidth - 74, 10.0), glm::vec2(1.0, 1.0), 0.0);
+	radar.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
+	radar.AddComponent<SpriteComponent>("radar-image", 64, 64, 1);
+	radar.AddComponent<AnimationComponent>(8, 5, true);
+
+	Entity tank = registry->CreateEntity();
+	tank.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0), glm::vec2(1.0, 1.0), 0.0);
+	tank.AddComponent<RigidBodyComponent>(glm::vec2(30.0, 0.0));
+	tank.AddComponent<SpriteComponent>("tank-image", 32, 32, 1);
+
+	Entity truck = registry->CreateEntity();
+	truck.AddComponent<TransformComponent>(glm::vec2(10.0, 50.0), glm::vec2(1.0, 1.0), 0.0);
+	truck.AddComponent<RigidBodyComponent>(glm::vec2(20.0, 0.0));
+	truck.AddComponent<SpriteComponent>("truck-image", 32, 32, 2);
 
 	// Entity tank = registry->CreateEntity();
 	/* Can also do it this way
@@ -163,13 +188,6 @@ void Game::LoadLevel(int level) {
 	//tank.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0), glm::vec2(1.0, 1.0), 0.0);
 	//tank.AddComponent<RigidBodyComponent>(glm::vec2(40.0, 0.0));
 	//tank.AddComponent<SpriteComponent>("tank-tiger-right", 32, 32, 0, 0, 1);
-
-	//Entity truck = registry->CreateEntity();
-	//registry->AddComponent<TransformComponent>(truck);
-	//truck.AddComponent<TransformComponent>(glm::vec2(2.0, 10.0));
-	//truck.AddComponent<RigidBodyComponent>(glm::vec2(2.0, 10.0));
-	//truck.AddComponent<SpriteComponent>("truck-ford-right", 32, 32, 0, 0, 1);
-	//truck.RemoveComponent<TransformComponent>();
 }
 
 void Game::Setup() {
