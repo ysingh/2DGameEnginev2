@@ -21,15 +21,18 @@ public:
 				animation.currentFrame = (int)(timeinSeconds * animation.frameRate);
 				if (animation.isLoop) {
 					animation.currentFrame %= animation.numFrames;
-					sprite.srcRect.x = sprite.width * animation.currentFrame;
+					sprite.srcRect.x = (sprite.width * animation.startFrameXOffset) + (sprite.width * animation.currentFrame);
+					sprite.srcRect.y = sprite.height * animation.startFrameYOffset;
 				}
 				else if (animation.currentFrame > animation.numFrames) {
 					animation.currentFrame = 1;
 					sprite.srcRect.x = 0;
+					sprite.srcRect.y = 0;
 					animation.play = false;
 				}
 				else {
-					sprite.srcRect.x = sprite.width * animation.currentFrame;
+					sprite.srcRect.x = animation.startFrameXOffset + (sprite.width * animation.currentFrame);
+					sprite.srcRect.y = sprite.height * animation.startFrameYOffset;
 				}
 			}
 		}

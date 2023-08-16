@@ -16,6 +16,8 @@
 
 #define DEBUG
 
+Entity knight;
+
 Game::Game() {
 	isRunning = false;
 	Logger::Log("Game constructor called");
@@ -107,7 +109,7 @@ void Game::LoadLevel(int level) {
 	assetStore->AddTexture(renderer, "chopper-image", "./assets/images/chopper.png");
 	assetStore->AddTexture(renderer, "radar-image", "./assets/images/radar.png");
 	assetStore->AddTexture(renderer, "tilemap-image", "./assets/tilemaps/jungle.png");
-	//assetStore->AddTexture(renderer, "knight", "./assets/spritesheets/fire_knight_SpriteSheet_288x128.png");
+	assetStore->AddTexture(renderer, "knight", "./assets/spritesheets/fire_knight_SpriteSheet_288x128.png");
 
 	// Load the tilemap
 	int tileSize = 32;
@@ -141,28 +143,28 @@ void Game::LoadLevel(int level) {
 	registry->AddSystem<RenderSystem>();
 	registry->AddSystem<AnimationSystem>();
 
-	//auto knight = registry->CreateEntity();
-	//knight.AddComponent<TransformComponent>(glm::vec2(0.0, 0.0), glm::vec2(1.5, 1.5));
+	knight = registry->CreateEntity();
+	knight.AddComponent<TransformComponent>(glm::vec2(0.0, 0.0), glm::vec2(1.5, 1.5));
 
 	// Right now the knight can only have one sprite component
-	//knight.AddComponent<SpriteComponent>("knight", 288, 128, 0, 128 * 5);
+	knight.AddComponent<SpriteComponent>("knight", 288, 128, 0, 0);
 	// The last component added wins
 	//knight.AddComponent<SpriteComponent>("knight", 288, 128, 0, 128 * 10);
 	// Need a way to change the sprite value when the knight is in walk idle and attack mode
-	//knight.AddComponent<AnimationComponent>(20, 15);
+	knight.AddComponent<AnimationComponent>("walk", 8, 15);
 
 	// Create an entity
 	Entity chopper = registry->CreateEntity();
 	chopper.AddComponent<TransformComponent>(glm::vec2(10.0, 100.0), glm::vec2(1.0, 1.0), 0.0);
 	chopper.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
 	chopper.AddComponent<SpriteComponent>("chopper-image", 32, 32, 1);
-	chopper.AddComponent<AnimationComponent>(2, 15, true);
+	chopper.AddComponent<AnimationComponent>("blade-rotate", 2, 15);
 
 	Entity radar = registry->CreateEntity();
 	radar.AddComponent<TransformComponent>(glm::vec2(windowWidth - 74, 10.0), glm::vec2(1.0, 1.0), 0.0);
 	radar.AddComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0));
 	radar.AddComponent<SpriteComponent>("radar-image", 64, 64, 1);
-	radar.AddComponent<AnimationComponent>(8, 5, true);
+	radar.AddComponent<AnimationComponent>("radar-rotate", 8, 5);
 
 	Entity tank = registry->CreateEntity();
 	tank.AddComponent<TransformComponent>(glm::vec2(10.0, 10.0), glm::vec2(1.0, 1.0), 0.0);
@@ -173,6 +175,9 @@ void Game::LoadLevel(int level) {
 	truck.AddComponent<TransformComponent>(glm::vec2(10.0, 50.0), glm::vec2(1.0, 1.0), 0.0);
 	truck.AddComponent<RigidBodyComponent>(glm::vec2(20.0, 0.0));
 	truck.AddComponent<SpriteComponent>("truck-image", 32, 32, 2);
+
+
+	//knight.AddComponent<AnimationComponent>("attack", 8, 15, false, 0, 10);
 
 	// Entity tank = registry->CreateEntity();
 	/* Can also do it this way
@@ -220,6 +225,10 @@ void Game::ProcessInput() {
 			//Logger::Log(" Current key pressed: " + event.key.keysym.sym);
 			if (event.key.keysym.sym == SDLK_ESCAPE) {
 				isRunning = false;
+			}
+			if (event.key.keysym.sym == SDLK_w) {
+				knight.AddComponent<AnimationComponent>("attack", 18, 15, false, 0, 10);
+
 			}
 			break;
 		case SDL_KEYUP:
